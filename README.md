@@ -75,7 +75,7 @@ WordPressへのアクセスはLoad Balancerを利用します。
 [opc@oke-client ~]$ kubectl get svc
 NAME              TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)        AGE
 kubernetes        ClusterIP      10.96.0.1       <none>           443/TCP        20d
-wordpress         LoadBalancer   10.96.109.198   1.1.1.1   80:31813/TCP   8m
+wordpress         LoadBalancer   10.96.109.198   1.1.1.1          80:31813/TCP   8m
 wordpress-mysql   ClusterIP      10.96.122.255   <none>           3306/TCP       10m
 [opc@oke-client ~]$
 ```
@@ -170,7 +170,7 @@ Annotations:  Spec:
 
 このように、WordPress Podにも付与している`tier=frontend`というラベルが付与されているPodに対しては、Ingress/Egressともに`traffic allowed to all ports`と`traffic not restricted by source`という形で、全ての通信が許可されています。  
 
-この状態で、WordPressにブラウザでアクセスすると、フロントエンドへはアクセスできますが、依然としてMySQL Podへのアクセスは遮断されているので、データベース接続エラーが発生します。  
+この状態で、WordPressにブラウザでアクセスすると、フロントエンドへはアクセスできますが、依然としてMySQL Podへのアクセスは遮断されているので、データベース接続エラーが発生します。(ブラウザ上では`Error establishing a database connection`というメッセージが表示されます)  
 
 #### MySQL Podに対して特定の通信を許可
 
@@ -186,10 +186,10 @@ kubectl create -f 05-allow-mysql-ingress.yaml
 
 ```sh
 [opc@oke-client ~]$ kubectl get netpol
-NAME                   POD-SELECTOR    AGE
-allow-all-ingress      tier=frontend   8m
-default-deny-all       <none>          18m
-allow-ingress-mysql   tier=mysql      2m
+NAME                  POD-SELECTOR    AGE
+allow-all-frontend    tier=frontend   2m17s
+allow-ingress-mysql   tier=mysql      18s
+default-deny-all      <none>          3m31s
 [opc@oke-client ~]$ 
 ```
 
