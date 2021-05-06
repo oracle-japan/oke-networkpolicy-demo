@@ -10,15 +10,15 @@
 
 OKEのプロビジョニングは、[こちらのハンズオン手順](https://oracle-japan.github.io/paasdocs/documents/containers/common/)の1~4に従って実施してください。
 
-### Calicoのインストール
+### 事前準備
+
+ここでは、NetworkPolicyを利用するためのCalicoのインストールとNetworkPolicyの挙動確認に利用するWordPressをインストールします。  
+
+#### Calicoのインストール
 
 OKEでは、CNIプラグインとしてflannelを利用しています。  
 flannelはNetworkPolicyには非対応ですが、OKEではCalicoを利用してNetworkPolicyを利用することが可能です。(Canal方式)  
 OKEでのCalicoのインストール方法は[こちら](https://docs.oracle.com/ja-jp/iaas/Content/ContEng/Tasks/contengsettingupcalico.htm)のドキュメントに従って実施してください。
-
-### 事前準備
-
-ここでは、NetworkPolicyの挙動確認に利用するWordPressをインストールします。  
 
 #### MySQLで利用するクレデンシャルの作成
 
@@ -32,7 +32,7 @@ kubectl create secret generic mysql --from-literal=password=<パスワード文�
 
 #### MySQLのインストール
 
-まずは、MySQLをインストールします。  
+MySQLをインストールします。  
 `01-mysql.yaml`をapplyします。
 
 ```sh
@@ -50,7 +50,7 @@ wordpress-mysql-5f8d9899fb-q5cff   1/1     Running   0          2m
 
 #### WordPressのインストール
 
-次に、WordPressをインストールします。  
+WordPressをインストールします。  
 `02-wordpress.yaml`をapplyします。  
 
 ```sh
@@ -75,12 +75,12 @@ WordPressへのアクセスはLoad Balancerを利用します。
 [opc@oke-client ~]$ kubectl get svc
 NAME              TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)        AGE
 kubernetes        ClusterIP      10.96.0.1       <none>           443/TCP        20d
-wordpress         LoadBalancer   10.96.109.198   158.101.67.120   80:31813/TCP   8m
+wordpress         LoadBalancer   10.96.109.198   1.1.1.1   80:31813/TCP   8m
 wordpress-mysql   ClusterIP      10.96.122.255   <none>           3306/TCP       10m
 [opc@oke-client ~]$
 ```
 
-`wordpress`という名前のServiceができているので、`ExternalIP`(上記では、`158.101.67.120`)にブラウザからアクセスします。  
+`wordpress`という名前のServiceができているので、`ExternalIP`(上記では、`1.1.1.1`)にブラウザからアクセスします。  
 WordPressの初期インストール画面が表示されれば成功です。  
 以降のNetworkPolicyの挙動確認のために初期インストールを済ませておきます。  
 
@@ -172,7 +172,7 @@ Annotations:  Spec:
 
 この状態で、WordPressにブラウザでアクセスすると、フロントエンドへはアクセスできますが、依然としてMySQL Podへのアクセスは遮断されているので、データベース接続エラーが発生します。  
 
-#### MySQL Podにたいして特定の通信を許可
+#### MySQL Podに対して特定の通信を許可
 
 最後に、MySQL Podに対して特定の通信のみを許可してみます。  
 今回は、`WordPress Pod(「tier=frontend」というラベルが付与されたPod)から3306ポートへのIngress TCP通信のみ許可`というルールで適用します。  
