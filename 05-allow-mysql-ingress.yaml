@@ -7,12 +7,14 @@ spec:
     matchLabels:
       tier: mysql
   policyTypes:
-  - Ingress
+    - Ingress
+    - Egress
   ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          tier: frontend
-    ports:
-    - protocol: TCP
-      port: 3306
+    - from:
+        - podSelector:
+            matchLabels:
+              tier: frontend
+      ports:
+        - port: 3306
+          protocol: TCP
+  egress: []

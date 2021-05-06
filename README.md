@@ -199,7 +199,7 @@ default-deny-all      <none>          3m31s
 [opc@oke-client ~]$ kubectl describe netpol allow-ingress-mysql
 Name:         allow-ingress-mysql
 Namespace:    default
-Created on:   2021-05-06 03:07:44 +0000 GMT
+Created on:   2021-05-06 05:16:15 +0000 GMT
 Labels:       <none>
 Annotations:  Spec:
   PodSelector:     tier=mysql
@@ -207,11 +207,12 @@ Annotations:  Spec:
     To Port: 3306/TCP
     From:
       PodSelector: tier=frontend
-  Not affecting egress traffic
-  Policy Types: Ingress
+  Allowing egress traffic:
+    <none> (Selected pods are isolated for egress connectivity)
+  Policy Types: Ingress, Egress
 [opc@oke-client ~]$ 
 ```
 
-このように、WordPress Podにも付与している`tier=frontend`というラベルが付与されているPodからの`3306/TCP`のIngress通信のみを許可しています。  
+このように、WordPress Podにも付与している`tier=frontend`というラベルが付与されているPodからの`3306/TCP`のIngress通信のみを許可しています。(Egressは全て拒否します)
 
 この状態で、WordPressにアクセスすると、正常にWordPressのページが表示されます。  
