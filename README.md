@@ -216,3 +216,11 @@ Annotations:  Spec:
 このように、WordPress Podにも付与している`tier=frontend`というラベルが付与されているPodからの`3306/TCP`のIngress通信のみを許可しています。(Egressは全て拒否します)
 
 この状態で、WordPressにアクセスすると、正常にWordPressのページが表示されます。  
+
+### クリーンアップ
+
+Manifestを配置しているディレクトリ直下で以下のコマンドを実行します。
+
+```sh
+kubectl delete -f .
+```
